@@ -65,5 +65,6 @@ def test_1():
     G.add_nodes_from([0, 1, 2])
     G.add_edges_from([(0, 1), (0, 2), (1, 2)])
     L = MIS(G)
-    assert(L == [True, False, True] or L == [False, True, False])
+    print(L)
+    assert(L == [True, False, False] or L == [False, True, False] or L == [False, False, True])
     
