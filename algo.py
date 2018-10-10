@@ -14,15 +14,14 @@ def MIS(G):
     
     preprocessing(G)
     
-    n = len(V)
-    D = max(len(V[i]) for i in range(n))
+    n = D = G.number_of_nodes()
     
     M = 34#faudrait trouver la vraie valeur
     
-    for i in range(log(D)):
-        for j in range(M*log(n)):
+    for i in range(int(log(D))+1):
+        for j in range(int(M*log(n))+1):
             
-            n = G.number_of_nodes()
+            
             v = [0 for _ in range(n)]
             received = [False for _ in range(n)]
             
@@ -59,3 +58,12 @@ def MIS(G):
                         G.nodes[u]["active"] = False
 
     return [G.nodes[i]["MIS"] for i in range(n)]
+
+
+def test_1():
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2])
+    G.add_edges_from([(0, 1), (0, 2), (1, 2)])
+    L = MIS(G)
+    assert(L == [True, False, True] or L == [False, True, False])
+    
