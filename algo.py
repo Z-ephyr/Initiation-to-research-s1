@@ -1,15 +1,16 @@
 from math import *
 import networkx as nx
-
+from random import random
 
 def preprocessing(G):
     for i in range(G.number_of_nodes()):
         G.nodes[i]["active"] = True
-
+        G.nodes[i]["MIS"] = False
 
 
 def MIS(G):
     '''G = nx.Graph()'''
+    '''je suppose que les noeuds sont dans [|0, n-1|]'''
     
     preprocessing(G)
     
@@ -21,26 +22,40 @@ def MIS(G):
     for i in range(log(D)):
         for j in range(M*log(n)):
             
-            #Exchange 1
-            v = 0
+            n = G.number_of_nodes()
+            v = [0 for _ in range(n)]
+            received = [False for _ in range(n)]
             
+            #Exchange 1 : emission            
+            for u in range(n):
+                if G.nodes[u]["active"]:
+                    p = random()
+                    if p <= 1./ (2**(log(D)-i)):
+                        for voisin in G.adj[u]:
+                            received[voisin] = True
+                        v[u] = 1
+                
+            #reception
+            for u in range(n):
+                if G.nodes[u]["active"]:
+                    if received[u]:
+                        v[u] = 0
             
-    
-#  he algorithm, presentedin Table 1, is synchronously executed by all nodes
-    
-# 1. Algorithm: MIS (n, D) at node u
-# 2. For i = 0: log D
-# 3. For j = 0: M log n // M is constant derived below
-# 4. * exchange 1*
-# 5. v = 0
-# 6. With probability 1
-# 2logD−i broadcast B to neighbors and set v = 1 // B is one bit
-# 7. If received message from neighbor, then v = 0
-# 8. * exchange 2 *
-# 9. If v = 1 then
-# 10. Broadcast B; join MIS; exit the algorithm
-# 11. Else
-# 12. If received message B in this exchange, then mark node u inactive; exit the algorithm
-# 13. End
-# 14. End
-# 15. End
+            received = [False for _ in range(n)]
+            
+            #Exchange 2 : emission
+            for u in range(n):
+                if G.nodes[u]["active"]:
+                    if v[u] == 1:
+                        for voisin in G.adj[u]:
+                            received[voisin] = True
+                        G.nodes[u]["active"] = False
+                        G.nodes[u]["MIS"] = True 
+                    
+            #reception
+            for u in range(n):
+                if G.nodes[u]["active"]:
+                    if received[u]:
+                        G.nodes[u]["active"] = False
+
+    return [G.nodes[i]["MIS"] for i in range(n)]
