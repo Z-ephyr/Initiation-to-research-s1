@@ -17,6 +17,7 @@ def build_graph(nodes, edges):
 
 def arap(G):
     """computes the MIS of graph G using the Arapoglu Algorithm"""
+    history = []
     stop = False
     while not stop:
         stop = True
@@ -74,6 +75,20 @@ def arap(G):
                 if G.nodes[i]['inNbrAll'] and not G.nodes[i]['inNbrLower']:
                     G.nodes[i]['status'] = 'out'
                     stop = False
+        
+        history.append(G.copy())
+    return history
+
+def colors(G):
+    colors = []
+    for node in G.nodes:
+        if G.nodes[node]['status'] == 'in':
+            colors.append("green")
+        elif G.nodes[node]['status'] == 'wait':
+            colors.append("red")
+        else:
+            colors.append("black")
+    return colors
 
 
 def test1():
