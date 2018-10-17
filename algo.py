@@ -8,18 +8,35 @@ def preprocessing(G):
         G.nodes[i]["active"] = True
         G.nodes[i]["MIS"] = False
 
+def intialization(G):
+    G.add_nodes_from(G.nodes, v = 0, received = False)
 
-def MIS(G):
+    for u in G.nodes:
+        if G.nodes[u]["MIS"]:
+            for voisin in G.adj[u]:
+                G.nodes[voisin]["received"] = True
+            G.nodes[u]["v"] = 1
+
+    for u in G.nodes:
+        if G.nodes[u]["active"]:
+            if G.nodes[u]["received"]:
+                G.nodes[u]["active"] = False
+
+def MIS(G_original, init=False):
     '''G = nx.Graph()'''
     '''je suppose que les noeuds sont dans [|0, n-1|]'''
+    G = G_original.copy()
+    if init:
+        intialization(G)
+    else:
+        G.add_nodes_from(G.nodes, active = True, MIS = False)
     
-    G.add_nodes_from(G.nodes, active = True, MIS = False)
     history = []
     history.append(deepcopy(G))
 
     n = D = G.number_of_nodes()
     
-    M = 34#faudrait trouver la vraie valeur
+    M = 5#faudrait trouver la vraie valeur
     
     for i in range(int(log(D))+1):
         for j in range(int(M*log(n))+1):
